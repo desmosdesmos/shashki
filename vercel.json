@@ -20,11 +20,11 @@
     },
     {
       "src": "/telegram",
-      "dest": "/telegram.html"
+      "dest": "/frontend/telegram.html"
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/frontend/dist/index.html"
     }
   ]
 }
