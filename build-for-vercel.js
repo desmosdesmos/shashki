@@ -6,8 +6,11 @@ const { join } = require('path');
 const distDir = join(__dirname, 'frontend', 'dist');
 mkdirSync(distDir, { recursive: true });
 
+// Install dependencies in frontend directory (including devDependencies)
+execSync('cd frontend && npm install', { stdio: 'inherit' });
+
 // Run the build command
-execSync('cd frontend && npm run build', { stdio: 'inherit' });
+execSync('cd frontend && npx vite build', { stdio: 'inherit' });
 
 // Copy telegram.html to dist directory
 const telegramHtmlSrc = join(__dirname, 'frontend', 'telegram.html');
