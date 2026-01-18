@@ -1,37 +1,40 @@
 // frontend/src/utils/tgIntegration.js
-let tg;
+import { useEffect } from 'react';
 
 export const initializeTGWebApp = () => {
-  // Проверяем, доступен ли объект Telegram WebApp
-  if (window.Telegram && window.Telegram.WebApp) {
-    tg = window.Telegram.WebApp;
-    
-    // Устанавливаем цвет фона
-    tg.setBackgroundColor('#f0f2f5');
-    
-    // Устанавливаем цвет заголовка
-    tg.setHeaderColor('#2c3e50');
-    
-    // Включаем вертикальный свайп для закрытия
-    tg.enableClosingConfirmation();
+  // Проверяем, что мы внутри Telegram Web App
+  if (window.Telegram?.WebApp) {
+    // Инициализируем Telegram Web App
+    const tg = window.Telegram.WebApp;
     
     // Устанавливаем размеры приложения
-    tg.expand();
+    tg.ready();
     
-    console.log('Telegram WebApp initialized');
+    // Устанавливаем цвет фона
+    document.body.style.backgroundColor = '#f0f0f0';
+    
+    // Включаем вертикальный свайп
+    tg.enableVerticalSwipes();
+    
+    console.log('Telegram Web App initialized');
   } else {
-    console.warn('Telegram WebApp not available');
+    console.log('Not in Telegram Web App environment');
   }
 };
 
-export const closeTgApp = () => {
-  if (tg) {
-    tg.close();
+// Функция для получения данных пользователя из Telegram
+export const getUserData = () => {
+  if (window.Telegram?.WebApp) {
+    const tg = window.Telegram.WebApp;
+    return tg.initDataUnsafe?.user || null;
   }
+  return null;
 };
 
-export const sendDataToTG = (data) => {
-  if (tg) {
-    tg.sendData(JSON.stringify(data));
+// Функция для расширения приложения на весь экран
+export const expandApp = () => {
+  if (window.Telegram?.WebApp) {
+    const tg = window.Telegram.WebApp;
+    tg.expand();
   }
 };

@@ -4,7 +4,7 @@ import CheckersBoard from './components/CheckersBoard';
 import GameControls from './components/GameControls';
 import GameInfo from './components/GameInfo';
 import InviteSection from './components/InviteSection';
-import { initializeTGWebApp } from './utils/tgIntegration';
+import { initializeTGWebApp, expandApp } from './utils/tgIntegration';
 import { getBestMove } from './utils/ai';
 
 const App = () => {
@@ -22,16 +22,34 @@ const App = () => {
   const [gameMode, setGameMode] = useState('ai'); // 'ai' или 'online'
   const [aiDifficulty, setAiDifficulty] = useState('medium'); // 'easy', 'medium', 'hard'
   const [roomId, setRoomId] = useState(null);
+  const [isTgReady, setIsTgReady] = useState(false);
 
   // Инициализация Telegram Web App
   useEffect(() => {
     initializeTGWebApp();
+
+    // Если мы в Telegram Web App, ждем готовности
+    if (window.Telegram?.WebApp) {
+      const tg = window.Telegram.WebApp;
+      tg.ready();
+      setIsTgReady(true);
+
+      // Устанавливаем цвет фона
+      document.body.style.backgroundColor = '#f0f0f0';
+
+      // Расширяем приложение на весь экран
+      setTimeout(expandApp, 500);
+    } else {
+      setIsTgReady(true); // Если не в TG, просто помечаем как готовое
+    }
   }, []);
 
   // Инициализация доски
   useEffect(() => {
-    resetGame();
-  }, []);
+    if (isTgReady) {
+      resetGame();
+    }
+  }, [isTgReady]);
 
   const resetGame = () => {
     // Инициализация стандартного положения шашек
@@ -211,26 +229,41 @@ const App = () => {
     }
   };
 
+  // Показываем сообщение о загрузке, пока не готово
+  if (!isTgReady) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#f0f0f0'
+      }}>
+        <p>Загрузка приложения...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="game-container">
       <div className="game-header">
         <h1 className="game-title">Шашки</h1>
         <p className="game-status">
-          {gameState.gameStatus === 'active' 
+          {gameState.gameStatus === 'active'
             ? `Ход: ${gameState.currentPlayer === 'player1' ? gameState.player1.name : gameState.player2.name}`
-            : gameState.gameStatus === 'finished' 
+            : gameState.gameStatus === 'finished'
               ? `Победитель: ${gameState.winner === 'player1' ? gameState.player1.name : gameState.player2.name}`
               : 'Ожидание начала игры'}
         </p>
       </div>
-      
-      <CheckersBoard 
+
+      <CheckersBoard
         board={gameState.board}
         selectedPiece={gameState.selectedPiece}
         validMoves={gameState.validMoves}
         onClick={handleSquareClick}
       />
-      
+
       <GameControls
         onReset={resetGame}
         gameMode={gameMode}
@@ -238,13 +271,13 @@ const App = () => {
         aiDifficulty={aiDifficulty}
         onDifficultyChange={setAiDifficulty}
       />
-      
-      <GameInfo 
+
+      <GameInfo
         player1={gameState.player1}
         player2={gameState.player2}
         currentPlayer={gameState.currentPlayer}
       />
-      
+
       {gameMode === 'online' && (
         <InviteSection roomId={roomId} />
       )}
