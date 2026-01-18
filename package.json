@@ -8,7 +8,8 @@
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && nodemon server.js",
     "build": "cd frontend && npm run build",
-    "start": "node backend/server.js"
+    "start": "cd frontend && npm run build && npx serve -s dist",
+    "vercel-build": "cd frontend && npm run build"
   },
   "keywords": [
     "telegram",
@@ -19,6 +20,7 @@
   "author": "Telegram Checkers Mini App",
   "license": "MIT",
   "dependencies": {
-    "concurrently": "^7.6.0"
+    "concurrently": "^7.6.0",
+    "serve": "^14.2.0"
   }
 }
