@@ -9,7 +9,7 @@
     "dev:backend": "cd backend && nodemon server.js",
     "build": "cd frontend && npm run build",
     "start": "cd frontend && npm run build && npx serve -s dist",
-    "vercel-build": "cd frontend && npm run build"
+    "vercel-build": "node build-for-vercel.js"
   },
   "keywords": [
     "telegram",
